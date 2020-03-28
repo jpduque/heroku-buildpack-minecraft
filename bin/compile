@@ -16,5 +16,16 @@ echo "done"
 
 MC_VERSION="${MC_VERSION:-1.15.2}"
 echo -n "-----> Installing server version:${MC_VERSION}... "
-curl --silent -o $BUILD_DIR/server.jar "https://launcher.mojang.com/v1/objects/bb2b6b1aefcd70dfd1892149ac3a215f6c636b07/server.jar" | indent
+
+if echo "$MC_VERSION" | grep -q '^1\.13.*$'; then
+  minecraft_uuid="${MINECRAFT_UUID:="d0caafb8438ebd206f99930cfaecfa6c9a13dca0"}"
+  minecraft_url="https://launcher.mojang.com/mc/game/${MC_VERSION}/server/${minecraft_uuid}/server.jar"
+elif echo "$MC_VERSION" | grep -q '^1\.14.*$'; then
+  minecraft_uuid="${MINECRAFT_UUID:="d0d0fe2b1dc6ab4c65554cb734270872b72dadd6"}"
+  minecraft_url="https://launcher.mojang.com/v1/objects/${minecraft_uuid}/server.jar"
+else
+  minecraft_url="https://s3.amazonaws.com/Minecraft.Download/versions/${MC_VERSION}/minecraft_server.${MC_VERSION}.jar"
+fi
+
+curl --silent -o $BUILD_DIR/server.jar $minecraft_url | indent
 echo "done"
